@@ -4,6 +4,7 @@ use App\Http\Controllers\auth as ControllersAuth;
 use App\Http\Controllers\DaftarBerkasController;
 use App\Http\Controllers\DaftarCalonSiswaController;
 use App\Http\Controllers\SPMB;
+use App\Models\daftarCalonSiswa;
 use App\Models\timeLine;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
@@ -43,7 +44,31 @@ Route::group(
     }
 );
 
-Route::view('dashboard-admin', 'dashboard')
+Route::get('dashboard-admin', function () {
+
+    // Hitung total pendaftar
+    $totalPendaftar = daftarCalonSiswa::count();
+
+    // Hitung berdasarkan jenis kelamin
+    $jumlahLaki = daftarCalonSiswa::where('jenis_kelamin', 'Laki-laki')->count();
+    $jumlahPerempuan = daftarCalonSiswa::where('jenis_kelamin', 'Perempuan')->count();
+
+    // Statistik jurusan
+    $jurusanStats = daftarCalonSiswa::select('jurusan_satu', \DB::raw('count(*) as total'))
+        ->groupBy('jurusan_satu')
+        ->get();
+
+    $jurusanLabels = $jurusanStats->pluck('jurusan_satu');
+    $jurusanData   = $jurusanStats->pluck('total');
+
+    return view('dashboard', compact(
+        'totalPendaftar',
+        'jumlahLaki',
+        'jumlahPerempuan',
+        'jurusanLabels',
+        'jurusanData'
+    ));
+})
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('dashboard-admin');
 Route::get('dashboard', function () {

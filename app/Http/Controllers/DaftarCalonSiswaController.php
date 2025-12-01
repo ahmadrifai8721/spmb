@@ -17,7 +17,7 @@ class DaftarCalonSiswaController extends Controller
         //
         $getDataSiswa = auth()->user()->daftarCalonSiswa;
 
-        if ($getDataSiswa->status && $getDataSiswa->berkas->status) {
+        if ($getDataSiswa->status && ($getDataSiswa->berkas ?? false) && $getDataSiswa->berkas->status) {
             return redirect()->route('finis')->with('info', 'Data Sudah Lengkap Silahkan Mengugu validasi data.');
         }
 
