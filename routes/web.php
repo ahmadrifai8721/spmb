@@ -43,13 +43,19 @@ Route::group(
     }
 );
 
-Route::view('dashboard', 'dashboard')
+Route::view('dashboard-admin', 'dashboard')
     ->middleware(['auth', 'verified', 'role:admin'])
-    ->name('dashboard');
+    ->name('dashboard-admin');
 Route::get('dashboard', function () {
-    return redirect()->route('du.index');
+    if (auth()->user()->hasRole('admin')) {
+        # code...
+        return redirect()->route('dashboard-admin');
+    } else {
+        # code...
+        return redirect()->route('du.index');
+    }
 })
-    ->middleware(['auth', 'verified', 'role:calon-siswa'])
+    ->middleware(['auth', 'verified',])
     ->name('dashboard');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
